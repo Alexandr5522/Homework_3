@@ -1,3 +1,4 @@
+import hashlib
 from time import sleep
 
 
@@ -5,12 +6,20 @@ class User:
     # nickname(имя пользователя, str), hash(password), int)), age(возраст, int)
     def __init__(self, nickname, password, age):
         self.nickname = nickname
-        self.password = password
+        self.password = self.hash_password(password)
         self.age = age
-        # возврат имени пользователя
 
+    def hash_password(self, password):
+            """Хеширование пароля"""
+            return hashlib.sha256(password.encode()).hexdigest()
+
+    def check_password(self, password):
+            """Проверяем пароль через хэш"""
+            return self.password == hashlib.sha256(password.encode()).hexdigest()
+
+    # возврат имени пользователя
     def __str__(self):
-        return self.nickname
+        return f"Пользователь({self.nickname}, возраст {self.age})"
 
 
 class Video:
@@ -22,6 +31,8 @@ class Video:
         self.time_now = 0
         self.adult_mode = adult_mode
 
+    def str(self):
+        return f"Видео({self.title}, продолжительность-{self.duration}сек., ограничение по возрасту{self.adult_mode})"
 
 class UrTube:
     # users(список объектов User), videos(список видео Video), current_user(текущий пользователь User)
@@ -33,8 +44,11 @@ class UrTube:
     # метод добавления имени пользователя и пароля
     def log_in(self, nickname, password):
         for user in self.users:
-            if user.nickname == nickname and user.password == password:
+            if user.nickname == nickname and user.check_password(password) == password:
                 self.current_user = user
+                print(f"Пользователь {nickname} вошёл в систему.")
+                return
+        print("Неправильный логин или пароль.")
 
     # метод регистрации нового пользователя
     def register(self, nickname, password, age):
@@ -45,17 +59,24 @@ class UrTube:
         new_user = User(nickname, password, age)
         self.users.append(new_user)
         self.current_user = new_user
-        return
+        print(f"Пользователь {nickname} зарегистрирован и вошёл в систему.")
 
     def log_out(self):
+        if self.current_user:
+            print(f"Пользователь {self.current_user.nickname} вышел из системы.")
         self.current_user = None
 
     def add(self, *args):
         for video in args:
             if video not in self.videos:
                 self.videos.append(video)
+                print(f'Видео ({video.title}) добавлено.')
             else:
-                return
+                print(f'Видео ({video.title}) уже существует.')
+
+    def contains(self, video):
+        """Магический метод для проверки наличия видео"""
+        return video in self.videos
 
     # принимает поисковое слово и возвращает список названий всех видео, содержащих поисковое слово, без учета регистра
     def get_videos(self, word):
@@ -70,21 +91,22 @@ class UrTube:
     # После текущее время просмотра данного видео сбрасывается.
     def watch_video(self, title):
         if not self.current_user:
-            print("Войдите в аккаунт, чтобы смотреть видео")
+            print("Войдите в аккаунт, чтобы смотреть видео.")
             return
 
         for video in self.videos:
             if video.title == title:
                 if video.adult_mode and self.current_user.age < 18:
-                    print("Вам нет 18 лет, пожалуйста, покиньте страницу")
+                    print("Вам нет 18 лет, пожалуйста, покиньте страницу.")
                     return
-
+                print(f"Начинаем просмотр видео: {video.title}")
                 for second in range(video.time_now + 1, video.duration + 1):
-                    print(second, end=' ')
+                    print(second, end=' ', flush=True)
                     sleep(1)  # Имитируем просмотр по одной секунде
-                print("Конец видео")
+                print("\nКонец видео")
                 video.time_now = 0  # Сбрасываем время остановки после полного просмотра
                 return
+        print(f'Видео не найдено.')
 
 
 ur = UrTube()
