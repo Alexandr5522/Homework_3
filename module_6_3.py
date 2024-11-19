@@ -44,10 +44,11 @@ class AquaticAnimal(Animal):
 
     def dive_in(self, dz):
         """Где dz изменение координаты z в _cords. Должен изменять в отрицательную сторону координату z уменьшенную
-        в 2 раза с учётом скорости. С каким бы знаком не был передан параметр dz, внутри метода используйте
+в 2 раза с учётом скорости. С каким бы знаком не был передан параметр dz, внутри метода используйте
          его значение по модулю(функция abs)."""
-
-        self._cords[2] = -abs((dz / 2) * self.speed)
+        delta_z = abs(dz * self.speed) / 2
+        new_z = self._cords[2] - delta_z
+        self._cords[2] = max(0, new_z)
 
 
 class PoisonousAnimal(Animal):  # класс описывающий ядовитых животных.
@@ -67,6 +68,6 @@ db.attack()
 
 db.move(1, 2, 3)
 db.get_cords()
-db.dive_in(3)
+db.dive_in()
 db.get_cords()
 db.lay_eggs(3)
