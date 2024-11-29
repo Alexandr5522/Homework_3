@@ -2,12 +2,17 @@ import math
 
 
 class Figure:  # класс фигур
-    sides_count = 0  # стороны фигуры
+    sides_count = 0  # количество сторон фигуры
 
     def __init__(self, color, *sides):
         self.filled = False  # изначально не закрашенный (bool)
-        self.__sides = sides  # список сторон (целые числа)
         self.__color = color  # список цветов в формате RGB
+
+        # Проверка на количество сторон
+        if len(sides) != self.sides_count:  # Если количество сторон не совпадает
+            self.__sides = [1] * self.sides_count  # Создаём массив с единичными сторонами
+        else:
+            self.__sides = list(sides)  # Если всё верно, принимаем переданные стороны
 
     def get_color(self):  # возвращает список RGB цветов
         self.filled = True
@@ -36,9 +41,8 @@ class Figure:  # класс фигур
         # Служебный, принимает неограниченное кол-во сторон, возвращает True,
         # если все стороны целые положительные числа и кол-во новых сторон совпадает с текущим,
         # False - во всех остальных случаях.
-        self.new_sides = new_sides
-        for i in new_sides:
-            if i > 0 and len(new_sides) == self.sides_count:
+        for sides in new_sides:
+            if sides > 0 and len(new_sides) == self.sides_count:
                 return True
             else:
                 return False
@@ -46,17 +50,15 @@ class Figure:  # класс фигур
     def get_sides(self):  # должен возвращать значение атрибута __sides.
         return self.__sides
 
-    def __len__(self):  # должен возвращать периметр фигуры.
-        return sum(self.__sides)
-
     def set_sides(self, *new_sides):
         # должен принимать новые стороны, если их количество не равно sides_count,
         # то не изменять, в противном случае - менять.
-        for j in new_sides:
-            if j != self.__is_valid_sides(j):
-                self.__sides = list(new_sides)
-                return self.__sides
+        if self.__is_valid_sides(*new_sides):
+            self.__sides = list(new_sides)
+        return self.__sides
 
+    def __len__(self):  # должен возвращать периметр фигуры.
+        return sum(self.__sides)
 
 class Circle(Figure):
     sides_count = 1
@@ -64,7 +66,7 @@ class Circle(Figure):
     def __init__(self, color, *sides):
         super().__init__(color, *sides)
         self.__sides = sides
-        self.__radius = self.__sides[0] / (2 * math.pi)
+        self.__radius = self.get_sides()[0] / (2 * math.pi)
         # рассчитать исходя из длины окружности(одной единственной стороны).
 
 
@@ -79,21 +81,24 @@ class Triangle(Figure):
     def __init__(self, color, *sides):
         super().__init__(color, *sides)
 
-    def get_square(self, a, b, c):  # Возвращает площадь треугольника.
+    def get_square(self):  # площадь треугольника (формула Герона)
+        sides = self.get_sides()
+        a, b, c = sides[0], sides[1], sides[2]
         s = (a + b + c) / 2  # полупериметр
-        return int(math.sqrt((s * (s - a) * (s - b) * (s - c))))  # формула Герона
+        return int(math.sqrt(s * (s - a) * (s - b) * (s - c)))  # по формуле Герона
 
 
 class Cube(Figure):
-    sides_count = 12
+    sides_count = 12 # у куба 12 ребер
 
     def __init__(self, color, *sides):
         super().__init__(color, *sides)
-        self.__sides = sides * self.sides_count  # список сторон (целые числа)
+        # Если стороны заданы корректно, берём их
+        self.__sides = self.get_sides()
 
-    def get_volume(self):  # возвращает объём куба.
-        v = self.__sides[0] ** 3
-        return math.ceil(v)
+    def get_volume(self):  # объём куба
+        side = self.__sides[0]  # сторона куба
+        return math.ceil(side ** 3)
 
 
 # Код для проверки:
@@ -121,9 +126,8 @@ print(len(circle1))
 print(cube1.get_volume())
 #
 tri = Triangle((0, 0, 0,), 2, 4, 5)
-print(tri.get_square(5, 5, 8))
+print(tri.get_square())
 tri.set_color(0, 0, 0)
 print(tri.get_color())
 print(len(tri))
 print(tri.get_sides())
-print(tri.set_sides(4))
