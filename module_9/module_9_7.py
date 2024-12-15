@@ -37,14 +37,34 @@ def difference_max_min(*args):
     return max(args) - min(args)
 
 
+@is_prime
+def division(*args):
+    # for i in args:                       # вариант проверки типа данных
+    #     if not isinstance(i, int):
+    #         lt = list(filter(lambda x: type(x) is int, args))
+    #         return (max(lt) + sum(lt)) // min(lt)
+    try:  # вариант проверки типа данных с исключением
+        return (max(args) + sum(args)) // min(args)
+    except TypeError as exc:
+        print('Неверный тип данных', exc)
+    finally:
+        lt = list(filter(lambda x: type(x) is int, args))
+        return (max(lt) + sum(lt)) // min(lt)
+
+
+
+
 result = sum_three(2, 3, 6)
-print(f'Результат суммы чисел: {result}')
+print(f'1. Результат суммы чисел: {result}')
 
 result2 = multiplication(2, 4, 5)
-print(f'Результат произведения чисел: {result2}')
+print(f'2. Результат произведения чисел: {result2}')
 
 result3 = average_value(5, 5, 5, 5)
-print(f'Среднее значение чисел: {result3}')
+print(f'3. Среднее значение чисел: {result3}')
 
 result4 = difference_max_min(33, 23, 45)
-print(f'Результат вычитания: {result4}')
+print(f'4. Результат вычитания: {result4}')
+
+result5 = division(3, 5, 10, 'Apple', 6, 'Orange')
+print(f'5. Результат функции: {result5}')
