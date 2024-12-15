@@ -47,13 +47,17 @@ def division(*args):
     #     if not isinstance(i, int):
     #         lt = list(filter(lambda x: type(x) is int, args))
     #         return (max(lt) + sum(lt)) // min(lt)
-    try:  # вариант проверки типа данных с исключением
+    try:                                           # вариант проверки типа данных с исключением
         return (max(args) + sum(args)) // min(args)
     except TypeError as exc:
         print('Неверный тип данных:', exc)
     finally:
         lt = list(filter(lambda x: type(x) is int, args))
         return (max(lt) + sum(lt)) // min(lt)
+
+@is_prime
+def list_numbers(*args):
+    return sum(args)
 
 
 
@@ -76,3 +80,10 @@ print(f'4. Результат вычитания: {result4}')
 
 result5 = division(3, 5, 10, 'Apple', 6, 'Orange')
 print(f'5. Результат функции: {result5}')
+
+num1 = [5, 7, 5, 9, 2, 50]
+num2 = [4, 3, 10, 8, 1]
+result6 = list_numbers(*list(x for x in range(1, 11))) # с использованием сборки
+print(f'6. Результат функции: {result6}')
+result7 = list_numbers(*list(x for x in num1 + num2))
+print(f'7. Результат функции: {result7}')
