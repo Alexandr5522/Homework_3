@@ -29,7 +29,11 @@ def multiplication(*args):
 
 @is_prime
 def average_value(*args):
-    return sum(args) // len(args)
+    a_value = sum(args) // len(args)
+    if not isinstance(args, int):
+        raise TypeError
+    else:
+        return a_value
 
 
 @is_prime
@@ -46,7 +50,7 @@ def division(*args):
     try:  # вариант проверки типа данных с исключением
         return (max(args) + sum(args)) // min(args)
     except TypeError as exc:
-        print('Неверный тип данных', exc)
+        print('Неверный тип данных:', exc)
     finally:
         lt = list(filter(lambda x: type(x) is int, args))
         return (max(lt) + sum(lt)) // min(lt)
@@ -60,8 +64,12 @@ print(f'1. Результат суммы чисел: {result}')
 result2 = multiplication(2, 4, 5)
 print(f'2. Результат произведения чисел: {result2}')
 
-result3 = average_value(5, 5, 5, 5)
-print(f'3. Среднее значение чисел: {result3}')
+try:
+    result3 = average_value(5, 5, 5, 5, 'Green')
+    print(f'3. Среднее значение чисел: {result3}')
+except TypeError:
+    print('3. Неверный тип данных ')
+
 
 result4 = difference_max_min(33, 23, 45)
 print(f'4. Результат вычитания: {result4}')
