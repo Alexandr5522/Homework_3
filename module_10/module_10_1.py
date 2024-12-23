@@ -1,6 +1,6 @@
 import threading
 import time
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 
 def write_words(word_count, file_name):
@@ -13,13 +13,13 @@ def write_words(word_count, file_name):
     print(f'Завершилась запись в файл {file_name}')
 
 
-t_start1 = time.time()
+t_start1 = datetime.now()
 write_words(10, 'example1.txt')
 write_words(30, 'example2.txt')
 write_words(200, 'example3.txt')
 write_words(100, 'example4.txt')
-t_finish1 = time.time()
-print(f'Работа потоков: {timedelta(seconds=t_finish1 - t_start1)}')  # время в часах, минутах, секундах
+t_finish1 = datetime.now()
+print(f'Работа потоков: {t_finish1 - t_start1}')  # время в часах, минутах, секундах
 
 t_start2 = time.time()
 thread1 = threading.Thread(target=write_words, args=(10, 'example5.txt'))
